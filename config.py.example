@@ -1,0 +1,7 @@
+config = {
+    "from":"",
+    "to":"",
+    "password":"",
+    "smtp_server":"",
+    "smtp_port":"",
+}
