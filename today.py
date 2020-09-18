@@ -15,23 +15,28 @@ county_population = 90005
 # TODO: Loop over configured counties
 dc = ds[ds.NAME == county]
 
-dc_summary = dc[["DATE", "NEGATIVE", "POSITIVE", "DEATHS", "DTH_NEW", "HOSP_YES", "POS_NEW", "TEST_NEW" ]].sort_values(["DATE"], ascending=False)
+dc_summary = dc[["DATE", "NEGATIVE", "POSITIVE", "DEATHS", "DTH_NEW", "HOSP_YES", "POS_NEW"]].sort_values(["DATE"], ascending=False).head(20)
 
-dc_summary["rolling_positive"] = (dc_summary["POSITIVE"]/(dc_summary["POSITIVE"] + dc_summary["NEGATIVE"])) * 100
+# Reverse the sort
+dc_summary = dc_summary.sort_values(["DATE"], ascending=True)
 
-# TODO: To match the model, this should be a 7 day moving average
-dc_summary["new_per_100k"] = (dc_summary["POS_NEW"] / county_population) * 100000
+# Add a calculated column for the "new cases per 100k of population" from the Harvard model
+dc_summary["pos_new_rolling"] = dc_summary["POS_NEW"].rolling(7).mean()
+dc_summary["new_per_100k"] = (dc_summary["pos_new_rolling"] / county_population) * 100000
+
+# Grab last week and sort
+dc_summary = dc_summary.tail(7).sort_values(["DATE"], ascending=False)
 
 todays_data = f"""
 
 date: {dc_summary.iloc[0]['DATE']}
 total positives: {dc_summary.iloc[0]['POSITIVE']}
+total hospitalizations: {dc_summary.iloc[0]['HOSP_YES']}
 total deaths: {dc_summary.iloc[0]['DEATHS']}
 new positives: {dc_summary.iloc[0]['POS_NEW']}
 new deaths: {dc_summary.iloc[0]['DTH_NEW']}
-rolling positives: {dc_summary.iloc[0]['rolling_positive']}
-new positives per 100k: {dc_summary.iloc[0]['new_per_100k']}
-total hospitalizations: {dc_summary.iloc[0]['HOSP_YES']}
+rolling new positives (7 day avg): {dc_summary.iloc[0]['pos_new_rolling']}
+rolling new positives per 100k (7 day avg): {dc_summary.iloc[0]['new_per_100k']}
 
 """
 
