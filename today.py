@@ -8,9 +8,11 @@ from email.message import EmailMessage
 q = "https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.csv?where=GEO%20%3D%20%27County%27&outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D"
 ds = pd.read_csv(q)
 
+# TODO: Externalize this into a dictionary of counties/pops/emails in the config
 county = "Dodge"
 county_population = 90005
 
+# TODO: Loop over configured counties
 dc = ds[ds.NAME == county]
 
 dc_summary = dc[["DATE", "NEGATIVE", "POSITIVE", "DEATHS", "DTH_NEW", "HOSP_YES", "POS_NEW", "TEST_NEW" ]].sort_values(["DATE"], ascending=False)
@@ -35,6 +37,8 @@ total hospitalizations: {dc_summary.iloc[0]['HOSP_YES']}
 
 message = EmailMessage()
 message["Subject"] = "COVID-19 Update"
+
+# TODO: Send to recipients configured for the selected county
 message["From"] = config["from"]
 message["To"] = config["to"]
 message.set_content(todays_data)
