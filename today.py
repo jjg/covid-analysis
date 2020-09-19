@@ -20,6 +20,8 @@ dc_summary = dc[["DATE", "NEGATIVE", "POSITIVE", "DEATHS", "DTH_NEW", "HOSP_YES"
 # Reverse the sort
 dc_summary = dc_summary.sort_values(["DATE"], ascending=True)
 
+dc_summary["rolling_positive"] = (dc_summary["POSITIVE"]/(dc_summary["POSITIVE"] + dc_summary["NEGATIVE"])) * 100
+
 # Add a calculated column for the "new cases per 100k of population" from the Harvard model
 dc_summary["pos_new_rolling"] = dc_summary["POS_NEW"].rolling(7).mean()
 dc_summary["new_per_100k"] = (dc_summary["pos_new_rolling"] / county_population) * 100000
@@ -31,6 +33,7 @@ todays_data = f"""
 
 date: {dc_summary.iloc[0]['DATE']}
 total positives: {dc_summary.iloc[0]['POSITIVE']}
+rolling percent positive: {dc_summary.iloc[0]['rolling_positive']}
 total hospitalizations: {dc_summary.iloc[0]['HOSP_YES']}
 total deaths: {dc_summary.iloc[0]['DEATHS']}
 new positives: {dc_summary.iloc[0]['POS_NEW']}
