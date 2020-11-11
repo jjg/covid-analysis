@@ -8,7 +8,6 @@ from email.message import EmailMessage
 
 def download_data():
     q = "https://opendata.arcgis.com/datasets/5374188992374b318d3e2305216ee413_12.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D"
-    #q = "https://opendata.arcgis.com/datasets/b913e9591eae4912b33dc5b4e88646c5_10.csv?where=GEO%20%3D%20%27County%27&outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D"
     return pd.read_csv(q)
 
 def process_data(ds):
